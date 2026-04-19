@@ -24,6 +24,9 @@ const styles = {
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Outfit:wght@300;400;500;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
+    .show-mobile-flex { display: none !important; }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+@media (max-width: 768px) { .show-mobile-flex { display: flex !important; } }
     body { background: ${theme.bg}; color: ${theme.text}; font-family: 'Outfit', sans-serif; line-height: 1.6; overflow-x: hidden; }
     ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: ${theme.bg}; }
     ::-webkit-scrollbar-thumb { background: ${theme.accent}; border-radius: 3px; }
@@ -363,48 +366,118 @@ function SectionLabel({ label, center }) {
 
 // ─── Navbar ──────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MOBILE FIXES — 3 drop-in replacements for Portfolio.jsx
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── 1. NAVBAR ─────────────────────────────────────────────────────────────────
+// Replace the entire Navbar() function with this one.
+// Adds a hamburger menu that collapses nav links on mobile.
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
   const scrollTo = (id) => {
     document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: "smooth" });
     setActive(id);
+    setMenuOpen(false);
   };
+
   return (
     <nav style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? "rgba(10,10,15,0.92)" : "transparent",
-      backdropFilter: scrolled ? "blur(20px)" : "none",
+      background: scrolled || menuOpen ? "rgba(10,10,15,0.96)" : "transparent",
+      backdropFilter: scrolled || menuOpen ? "blur(20px)" : "none",
       borderBottom: scrolled ? `1px solid ${theme.border}40` : "none",
       transition: "all 0.3s ease",
       padding: "1rem 2rem",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
     }}>
-      <span style={{
-        fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1.25rem",
-        background: `linear-gradient(135deg, ${theme.accent}, ${theme.teal})`,
-        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-      }}>{"<VS />"}</span>
-      <ul style={{ display: "flex", gap: "2rem", listStyle: "none", alignItems: "center" }}>
-        {NAV_LINKS.map(link => (
-          <li key={link}>
-            <button onClick={() => scrollTo(link)} style={{
-              fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: 500,
-              color: active === link ? theme.accentSoft : theme.textMuted,
-              transition: "color 0.2s", letterSpacing: "0.03em",
-            }}
-              onMouseEnter={e => e.target.style.color = theme.text}
-              onMouseLeave={e => e.target.style.color = active === link ? theme.accentSoft : theme.textMuted}>
-              {link}
-            </button>
-          </li>
-        ))}
-      </ul>
+      {/* Top row: logo + hamburger */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{
+          fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1.25rem",
+          background: `linear-gradient(135deg, ${theme.accent}, ${theme.teal})`,
+          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+        }}>{"<VS />"}</span>
+
+        {/* Desktop nav */}
+        <ul style={{ display: "flex", gap: "2rem", listStyle: "none", alignItems: "center" }}
+          className="hide-mobile">
+          {NAV_LINKS.map(link => (
+            <li key={link}>
+              <button onClick={() => scrollTo(link)} style={{
+                fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: 500,
+                color: active === link ? theme.accentSoft : theme.textMuted,
+                transition: "color 0.2s", letterSpacing: "0.03em",
+              }}
+                onMouseEnter={e => e.target.style.color = theme.text}
+                onMouseLeave={e => e.target.style.color = active === link ? theme.accentSoft : theme.textMuted}>
+                {link}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Hamburger button — mobile only */}
+        <button
+          onClick={() => setMenuOpen(o => !o)}
+          style={{
+            display: "none", flexDirection: "column", gap: "5px",
+            padding: "4px", background: "none", border: "none", cursor: "pointer",
+          }}
+          className="show-mobile-flex"
+          aria-label="Toggle menu"
+        >
+          {[0, 1, 2].map(i => (
+            <span key={i} style={{
+              display: "block", width: 22, height: 2, borderRadius: 1,
+              background: theme.textMuted,
+              transform: menuOpen
+                ? i === 0 ? "translateY(7px) rotate(45deg)"
+                : i === 2 ? "translateY(-7px) rotate(-45deg)"
+                : "scaleX(0)"
+                : "none",
+              transition: "transform 0.25s ease, opacity 0.25s",
+              opacity: menuOpen && i === 1 ? 0 : 1,
+            }} />
+          ))}
+        </button>
+      </div>
+
+      {/* Mobile dropdown menu */}
+      <div style={{
+        overflow: "hidden",
+        maxHeight: menuOpen ? "400px" : "0",
+        transition: "max-height 0.35s ease",
+      }}>
+        <ul style={{
+          listStyle: "none", paddingTop: "1rem", paddingBottom: "0.5rem",
+          display: "flex", flexDirection: "column", gap: "0",
+        }}>
+          {NAV_LINKS.map(link => (
+            <li key={link}>
+              <button onClick={() => scrollTo(link)} style={{
+                width: "100%", textAlign: "left",
+                padding: "0.75rem 0",
+                fontFamily: "'Outfit', sans-serif", fontSize: "1rem", fontWeight: 500,
+                color: active === link ? theme.accentSoft : theme.textMuted,
+                borderBottom: `1px solid ${theme.border}40`,
+                transition: "color 0.2s",
+              }}>
+                {link}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 }
@@ -1451,60 +1524,50 @@ function TechStack() {
               {!isTyping && shownRows.length > 0 && (
                 <>
                   <div style={{ height: 1, background: "#21262d", margin: "14px 0" }} />
-
-                  {cat.techs.map((t, i) => (
-                    <div
-                      key={t.name}
-                      style={{
-                        display: "flex", alignItems: "center", margin: "4px 0",
-                        fontFamily: "'DM Mono', monospace", fontSize: 13, lineHeight: 1.8,
-                        opacity: shownRows.includes(i) ? 1 : 0,
-                        transform: shownRows.includes(i) ? "translateY(0)" : "translateY(4px)",
-                        transition: "opacity 0.25s, transform 0.25s",
-                      }}
-                    >
-                      {/* Line number */}
-                      <span style={{ color: "#3d444d", minWidth: 28 }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-
-                      {/* SVG icon — colored by category */}
-                      <span
-                        style={{ minWidth: 22, display: "flex", alignItems: "center" }}
-                        dangerouslySetInnerHTML={{ __html: getStackIcon(t.icon, cat.color) }}
-                      />
-
-                      {/* Name */}
-                      <span style={{
-                        color: "#e2e0f0", minWidth: 160,
-                        fontWeight: 500, marginLeft: 8,
-                      }}>
-                        {t.name}
-                      </span>
-
-                      {/* Separator */}
-                      <span style={{ color: "#3d444d", margin: "0 10px" }}>—</span>
-
-                      {/* Level bars */}
-                      <div style={{ display: "flex", gap: 2, marginRight: 10 }}>
-                        {Array.from({ length: 10 }, (_, j) => (
-                          <div key={j} style={{
-                            width: 8, height: 8, borderRadius: 2,
-                            background: j < Math.round(t.level / 10) ? cat.color : "#21262d",
-                          }} />
-                        ))}
-                      </div>
-
-                      {/* Level label */}
-                      <span style={{
-                        fontSize: 11,
-                        color: LEVEL_COLORS[t.label],
-                        letterSpacing: "0.06em",
-                      }}>
-                        {t.label}
-                      </span>
-                    </div>
-                  ))}
+  {cat.techs.map((t, i) => (
+    <div
+      key={t.name}
+      style={{
+        display: "flex", alignItems: "center", margin: "4px 0",
+        fontFamily: "'DM Mono', monospace", fontSize: 13, lineHeight: 1.8,
+        opacity: shownRows.includes(i) ? 1 : 0,
+        transform: shownRows.includes(i) ? "translateY(0)" : "translateY(4px)",
+        transition: "opacity 0.25s, transform 0.25s",
+        flexWrap: "wrap", gap: "2px",
+      }}
+    >
+      <span style={{ color: "#3d444d", minWidth: 28, flexShrink: 0 }}>
+        {String(i + 1).padStart(2, "0")}
+      </span>
+      <span
+        style={{ minWidth: 22, flexShrink: 0, display: "flex", alignItems: "center" }}
+        dangerouslySetInnerHTML={{ __html: getStackIcon(t.icon, cat.color) }}
+      />
+      <span style={{
+        color: "#e2e0f0", fontWeight: 500, marginLeft: 8,
+        flex: "1 1 120px", minWidth: 0,
+      }}>
+        {t.name}
+      </span>
+      <span style={{ color: "#3d444d", margin: "0 8px", flexShrink: 0 }}>—</span>
+      <div className="tabs-bar" style={{ display: "flex", gap: 2, marginRight: 8, flexShrink: 0 }}>
+        {Array.from({ length: 10 }, (_, j) => (
+          <div key={j} style={{
+            width: 7, height: 7, borderRadius: 2,
+            background: j < Math.round(t.level / 10) ? cat.color : "#21262d",
+          }} />
+        ))}
+      </div>
+      <span style={{
+        fontSize: 11,
+        color: LEVEL_COLORS[t.label],
+        letterSpacing: "0.06em",
+        flexShrink: 0,
+      }}>
+        {t.label}
+      </span>
+    </div>
+  ))}
 
                   {/* Footer */}
                   <div style={{
@@ -1609,21 +1672,75 @@ function Contact() {
             Open to full-time roles, freelance projects, and collaborations. Drop a message and I'll get back to you promptly.
           </p>
           <div style={{ background: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: "24px", padding: "1.5rem 1.8rem", marginBottom: "2rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-              <div style={{ textAlign: "left" }}>
-                <div style={{ fontSize: "0.75rem", color: theme.textMuted, marginBottom: "4px", letterSpacing: "0.08em" }}>EMAIL ADDRESS</div>
-                <div style={{ fontSize: "1.1rem", fontFamily: "'DM Mono', monospace", color: theme.accentSoft }}>{email}</div>
-              </div>
-              <button onClick={copy} style={{
-                padding: "0.7rem 1.5rem", borderRadius: "12px", fontWeight: 600,
-                background: copied ? theme.success + "20" : theme.accentGlow2,
-                border: `1px solid ${copied ? theme.success + "50" : theme.accent + "40"}`,
-                color: copied ? theme.success : theme.accentSoft,
-                transition: "all 0.3s", fontSize: "0.9rem",
-              }}>
-                {copied ? "✓ Copied!" : "Copy Email"}
-              </button>
-            </div>
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start", // 👈 FIXED
+    gap: "1rem",
+    flexWrap: "wrap",
+    textAlign: "center",
+  }}
+>
+  {/* Email block */}
+  <div style={{ minWidth: 0, flex: 1 }}>
+    <div
+      style={{
+        fontSize: "0.7rem",
+        color: theme.textMuted,
+        marginBottom: "6px",
+        letterSpacing: "0.1em",
+        fontFamily: "'DM Mono', monospace",
+        textAlign: "center",
+      }}
+    >
+      EMAIL ADDRESS
+    </div>
+
+    <div
+      title="vigneshwarisakthivel8@email.com"
+      style={{
+        fontSize: "clamp(0.7rem, 2.5vw, 0.95rem)",
+        fontFamily: "'DM Mono', monospace",
+        color: theme.accentSoft,
+
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+
+        maxWidth: "60vw",
+        margin: "0 auto",
+        textAlign: "center",
+      }}
+    >
+      vigneshwarisakthivel8@email.com
+    </div>
+  </div>
+
+  {/* Copy button */}
+  <button
+    onClick={copy}
+    style={{
+      padding: "0.65rem 1.4rem",
+      borderRadius: "12px",
+      fontWeight: 600,
+      background: copied ? theme.success + "20" : theme.accentGlow2,
+      border: `1px solid ${
+        copied ? theme.success + "50" : theme.accent + "40"
+      }`,
+      color: copied ? theme.success : theme.accentSoft,
+      transition: "all 0.3s",
+      fontSize: "0.88rem",
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      flexShrink: 0,
+
+      alignSelf: "flex-start", // 👈 THIS keeps it left on mobile
+    }}
+  >
+    {copied ? "✓ Copied!" : "Copy"}
+  </button>
+</div>
           </div>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <SocialBtn href="https://github.com/vigneshwarisakthivel/" icon={<GithubIcon />} label="GitHub" color="#ffffff" />
