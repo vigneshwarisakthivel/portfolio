@@ -389,7 +389,7 @@ function Navbar() {
         fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1.25rem",
         background: `linear-gradient(135deg, ${theme.accent}, ${theme.teal})`,
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-      }}>{"<VS.dev />"}</span>
+      }}>{"<VS />"}</span>
       <ul style={{ display: "flex", gap: "2rem", listStyle: "none", alignItems: "center" }}>
         {NAV_LINKS.map(link => (
           <li key={link}>
@@ -1660,7 +1660,7 @@ function Footer() {
     <footer style={{ padding: "1.5rem", textAlign: "center", borderTop: `1px solid ${theme.border}`, color: theme.textDim, fontSize: "0.85rem" }}>
       <span>Designed & built with </span>
       <span style={{ color: theme.accent }}>♥</span>
-      <span> · React and Material MUI · {new Date().getFullYear()}</span>
+      <span> · React and Material UI · {new Date().getFullYear()}</span>
     </footer>
   );
 }
