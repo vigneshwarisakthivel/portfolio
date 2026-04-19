@@ -282,26 +282,6 @@ function IconDocker({ size = 20, color = "currentColor" }) {
   );
 }
 
-function IconGitBranch({ size = 20, color = "currentColor" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="6" y1="3" x2="6" y2="15"/>
-      <circle cx="18" cy="6" r="3"/>
-      <circle cx="6" cy="18" r="3"/>
-      <path d="M18 9a9 9 0 0 1-9 9"/>
-    </svg>
-  );
-}
-
-function IconKey({ size = 20, color = "currentColor" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="7.5" cy="15.5" r="5.5"/>
-      <path d="M21 2l-9.6 9.6"/>
-      <path d="M15.5 7.5l3 3L22 7l-3-3"/>
-    </svg>
-  );
-}
 
 function IconGlobe({ size = 13, color = "currentColor" }) {
   return (
@@ -322,27 +302,6 @@ function IconMail({ size = 16, color = "currentColor" }) {
   );
 }
 
-function IconCpu({ size = 20, color = "currentColor" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="4" width="16" height="16" rx="2"/>
-      <rect x="9" y="9" width="6" height="6"/>
-      <line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/>
-      <line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/>
-      <line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/>
-      <line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
-    </svg>
-  );
-}
-
-function IconAward({ size = 20, color = "currentColor" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="6"/>
-      <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
-    </svg>
-  );
-}
 
 function GithubIcon({ size = 18 }) {
   return (
