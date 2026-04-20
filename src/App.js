@@ -406,7 +406,7 @@ function Navbar() {
           fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1.25rem",
           background: `linear-gradient(135deg, ${theme.accent}, ${theme.teal})`,
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-        }}>{"<VS />"}</span>
+        }}>{"<VS.dev />"}</span>
 
         {/* Desktop nav */}
         <ul style={{ display: "flex", gap: "2rem", listStyle: "none", alignItems: "center" }}
@@ -1003,7 +1003,7 @@ function Experience() {
   const items = [
     {
       role: "Full Stack Developer Apprentice",
-      company: "VDart Digital",
+      company: "VDart",
       location: "Trichy, Tamil Nadu",
       period: "Apr 2025 — Feb 2026",
       color: theme.accent,
@@ -1018,7 +1018,7 @@ function Experience() {
     },
     {
       role: "Full Stack Developer Intern",
-      company: "VDart Digital",
+      company: "VDart",
       location: "Trichy, Tamil Nadu",
       period: "Dec 2024 — Mar 2024",
       color: theme.teal,
